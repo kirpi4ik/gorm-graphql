@@ -4,6 +4,7 @@ import grails.plugins.Plugin
 import grails.web.mime.MimeType
 import graphql.GraphQL
 import graphql.schema.GraphQLCodeRegistry
+
 import org.grails.gorm.graphql.GraphQLServiceManager
 import org.grails.gorm.graphql.Schema
 import org.grails.gorm.graphql.binding.manager.DefaultGraphQLDataBinderManager
@@ -96,6 +97,10 @@ Brief summary/description of the plugin.
         }
 
         graphQLSchema(graphQLSchemaGenerator: "generate")
-        graphQL(GraphQL, ref("graphQLSchema"))
+        graphQLBuilder(GraphQL.Builder, ref("graphQLSchema"))
+        graphQL(GraphQL) { bean ->
+            bean.factoryBean = "graphQLBuilder"
+            bean.factoryMethod = "build"
+        }
     }}
 }
