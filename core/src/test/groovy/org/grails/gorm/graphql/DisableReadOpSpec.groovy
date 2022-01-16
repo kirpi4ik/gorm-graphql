@@ -4,6 +4,7 @@ import grails.gorm.annotation.Entity
 import graphql.schema.GraphQLSchema
 import org.grails.datastore.gorm.GormEntity
 import org.grails.gorm.graphql.entity.dsl.GraphQLMapping
+import spock.lang.Ignore
 
 class DisableReadOpSpec extends HibernateSpec {
 
@@ -12,6 +13,7 @@ class DisableReadOpSpec extends HibernateSpec {
         [ReadDisabledEntity]
     }
 
+    @Ignore
     void "test that disable all operation in clean way"() {
 
         when:
