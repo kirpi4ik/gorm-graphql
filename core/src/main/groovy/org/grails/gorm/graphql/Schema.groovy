@@ -102,7 +102,7 @@ class Schema {
             for (Map.Entry<String, Class> entry: arguments) {
                 GraphQLType type = typeManager.getType(entry.value)
                 if (!(type instanceof GraphQLInputType)) {
-                    throw new IllegalArgumentException("Error while setting list arguments. Invalid returnType found for ${entry.value.name}. GraphQLType found ${type.name} of returnType ${type.class.name} is not an instance of ${GraphQLInputType.name}")
+                    throw new IllegalArgumentException("Error while setting list arguments. Invalid returnType found for ${entry.value.name}. GraphQLType found ${(type as GraphQLNamedType).name} of returnType ${type.class.name} is not an instance of ${GraphQLInputType.name}")
                 }
                 listArguments.put(entry.key, (GraphQLInputType)type)
             }
@@ -240,8 +240,8 @@ class Schema {
 
         Set<PersistentEntity> childrenNotMapped = []
 
-        for (MappingContext mappingContext: mappingContexts) {
-            for (PersistentEntity entity: mappingContext.persistentEntities) {
+        mappingContexts.each { MappingContext mappingContext ->
+            mappingContext.persistentEntities.each { PersistentEntity entity ->
 
                 GraphQLMapping mapping = GraphQLEntityHelper.getMapping(entity)
                 if (mapping == null) {
@@ -291,8 +291,7 @@ class Schema {
                             listFetcher = new PaginatedEntityDataFetcher(entity)
                         }
                         queryAll.type(typeManager.getQueryType(entity, GraphQLPropertyType.OUTPUT_PAGED))
-                    }
-                    else {
+                    } else {
                         if (listFetcher == null) {
                             listFetcher = new EntityDataFetcher(entity)
                         }
@@ -307,7 +306,7 @@ class Schema {
 
                     queryFields.add(queryAll)
 
-                    for (Map.Entry<String, GraphQLInputType> argument: listArguments) {
+                    for (Map.Entry<String, GraphQLInputType> argument : listArguments) {
                         queryAll.argument(newArgument()
                                 .name(argument.key)
                                 .type(argument.value))
@@ -321,7 +320,7 @@ class Schema {
 
                     GraphQLFieldDefinition.Builder queryCount = newFieldDefinition()
                             .name(namingConvention.getCount(entity))
-                            .type((GraphQLOutputType)typeManager.getType(Integer))
+                            .type((GraphQLOutputType) typeManager.getType(Integer))
                             .description(countOperation.description)
                             .deprecate(countOperation.deprecationReason)
 
@@ -351,8 +350,8 @@ class Schema {
                             .description(createOperation.description)
                             .deprecate(createOperation.deprecationReason)
                             .argument(newArgument()
-                            .name(entity.decapitalizedName)
-                            .type(createObjectType))
+                                    .name(entity.decapitalizedName)
+                                    .type(createObjectType))
                             .dataFetcher(new InterceptingDataFetcher(entity, serviceManager, mutationInterceptorInvoker, CREATE, createFetcher))
 
                     mutationFields.add(create)
@@ -404,21 +403,21 @@ class Schema {
                     mutationFields.add(delete)
                 }
 
-                populateIdentityArguments(entity, requiresIdentityArguments.toArray(new GraphQLFieldDefinition.Builder[0]))
+                populateIdentityArguments(entity, requiresIdentityArguments.toArray(new GraphQLFieldDefinition.Builder[0]) as GraphQLFieldDefinition.Builder)
 
-                for (Closure c: postIdentityExecutables) {
+                for (Closure c : postIdentityExecutables) {
                     c.call()
                 }
 
-                for (CustomOperation operation: mapping.customQueryOperations) {
+                for (CustomOperation operation : mapping.customQueryOperations) {
                     queryFields.add(operation.createField(entity, serviceManager, mappingContext, listArguments))
                 }
 
-                for (CustomOperation operation: mapping.customMutationOperations) {
+                for (CustomOperation operation : mapping.customMutationOperations) {
                     mutationFields.add(operation.createField(entity, serviceManager, mappingContext, Collections.emptyMap()))
                 }
 
-                for (GraphQLSchemaInterceptor schemaInterceptor: interceptorManager.interceptors) {
+                for (GraphQLSchemaInterceptor schemaInterceptor : interceptorManager.interceptors) {
                     schemaInterceptor.interceptEntity(entity, queryFields, mutationFields)
                 }
 
