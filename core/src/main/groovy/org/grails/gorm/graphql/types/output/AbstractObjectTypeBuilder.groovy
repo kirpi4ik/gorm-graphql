@@ -1,23 +1,22 @@
 package org.grails.gorm.graphql.types.output
 
 import graphql.TypeResolutionEnvironment
-import graphql.schema.GraphQLFieldDefinition
-import graphql.schema.GraphQLInterfaceType
-import graphql.schema.GraphQLObjectType
-import graphql.schema.GraphQLOutputType
-import graphql.schema.TypeResolver
+import graphql.schema.*
 import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.gorm.graphql.GraphQLEntityHelper
+import org.grails.gorm.graphql.entity.dsl.helpers.Arguable
 import org.grails.gorm.graphql.entity.property.GraphQLDomainProperty
-import org.grails.gorm.graphql.types.GraphQLPropertyType
 import org.grails.gorm.graphql.entity.property.manager.GraphQLDomainPropertyManager
 import org.grails.gorm.graphql.response.errors.GraphQLErrorsResponseHandler
+import org.grails.gorm.graphql.types.GraphQLPropertyType
 import org.grails.gorm.graphql.types.GraphQLTypeManager
 
-import static GraphQLFieldDefinition.newFieldDefinition
-import static GraphQLObjectType.newObject
-import static GraphQLInterfaceType.newInterface
+import static graphql.schema.FieldCoordinates.coordinates
+import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition
+import static graphql.schema.GraphQLInterfaceType.newInterface
+import static graphql.schema.GraphQLObjectType.newObject
 
 /**
  * A base class used to create object types that represent an entity
@@ -32,33 +31,51 @@ abstract class AbstractObjectTypeBuilder implements ObjectTypeBuilder {
     protected GraphQLDomainPropertyManager propertyManager
     protected GraphQLTypeManager typeManager
     protected GraphQLErrorsResponseHandler errorsResponseHandler
+    protected final GraphQLCodeRegistry.Builder codeRegistry
 
-    AbstractObjectTypeBuilder(GraphQLDomainPropertyManager propertyManager,
+    AbstractObjectTypeBuilder(GraphQLCodeRegistry.Builder codeRegistry,
+                              GraphQLDomainPropertyManager propertyManager,
                               GraphQLTypeManager typeManager,
                               GraphQLErrorsResponseHandler errorsResponseHandler) {
         this.typeManager = typeManager
         this.propertyManager = propertyManager
         this.errorsResponseHandler = errorsResponseHandler
+        this.codeRegistry = codeRegistry
     }
 
     abstract GraphQLDomainPropertyManager.Builder getBuilder()
 
     abstract GraphQLPropertyType getType()
 
-    protected GraphQLFieldDefinition.Builder buildField(GraphQLDomainProperty prop) {
+    protected GraphQLFieldDefinition.Builder buildField(GraphQLDomainProperty prop, String parentType) {
         GraphQLFieldDefinition.Builder field = newFieldDefinition()
                 .name(prop.name)
                 .deprecate(prop.deprecationReason)
                 .description(prop.description)
 
+        GraphQLOutputType type = (GraphQLOutputType) prop.getGraphQLType(typeManager, type)
         if (prop.dataFetcher != null) {
-            field.dataFetcher(prop.dataFetcher)
+            codeRegistry.dataFetcher(
+                    coordinates(parentType, prop.name),
+                    prop.dataFetcher
+            )
         }
+        field.type(type)
 
-        field.type((GraphQLOutputType)prop.getGraphQLType(typeManager, type))
         field
     }
 
+    protected GraphQLFieldDefinition.Builder addFieldArgs(GraphQLFieldDefinition.Builder field, GraphQLDomainProperty prop, MappingContext mapping) {
+        if (prop instanceof Arguable) {
+            List<GraphQLArgument> arguments = prop.getArguments(typeManager, mapping)
+            if (!arguments.isEmpty()) {
+                field.arguments(arguments)
+            }
+        }
+        field
+    }
+
+    @Override
     GraphQLOutputType build(PersistentEntity entity) {
 
         GraphQLOutputType objectType
@@ -75,12 +92,15 @@ abstract class AbstractObjectTypeBuilder implements ObjectTypeBuilder {
             List<GraphQLDomainProperty> properties = builder.getProperties(entity)
             for (GraphQLDomainProperty prop: properties) {
                 if (prop.output) {
-                    fields.add(buildField(prop).build())
+                    GraphQLFieldDefinition.Builder field = buildField(prop, NAME)
+                    addFieldArgs(field, prop, entity.mappingContext)
+                    fields.add(field.build())
                 }
             }
 
             if (errorsResponseHandler != null) {
-                fields.add(errorsResponseHandler.getFieldDefinition(typeManager))
+                GraphQLFieldDefinition fieldDefinition = errorsResponseHandler.getFieldDefinition(typeManager, NAME)
+                fields.add(fieldDefinition)
             }
 
             boolean hasChildEntities = entity.root && !entity.mappingContext.getDirectChildEntities(entity).empty

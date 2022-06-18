@@ -1,7 +1,7 @@
 package org.grails.gorm.graphql.testing
 
+import graphql.GraphQLContext
 import graphql.cachecontrol.CacheControl
-import graphql.execution.ExecutionContext
 import graphql.execution.ExecutionId
 import graphql.execution.ExecutionStepInfo
 import graphql.execution.MergedField
@@ -10,14 +10,10 @@ import graphql.language.Document
 import graphql.language.Field
 import graphql.language.FragmentDefinition
 import graphql.language.OperationDefinition
-import graphql.schema.DataFetchingEnvironment
-import graphql.schema.DataFetchingFieldSelectionSet
-import graphql.schema.GraphQLFieldDefinition
-import graphql.schema.GraphQLOutputType
-import graphql.schema.GraphQLSchema
-import graphql.schema.GraphQLType
+import graphql.schema.*
 import groovy.transform.CompileStatic
 import org.dataloader.DataLoader
+import org.dataloader.DataLoaderRegistry
 
 /**
  * A class to use to provide a mock DataFetchingEnvironment to
@@ -31,6 +27,7 @@ class MockDataFetchingEnvironment implements DataFetchingEnvironment {
 
     Object source
     Object context
+    Object localContext
     Map<String, Object> arguments = [:]
     List<Field> fields = []
     GraphQLOutputType fieldType
@@ -38,12 +35,19 @@ class MockDataFetchingEnvironment implements DataFetchingEnvironment {
     GraphQLSchema graphQLSchema
     Map<String, FragmentDefinition> fragmentsByName
     ExecutionId executionId
+    DataLoaderRegistry dataLoaderRegistry
+    CacheControl cacheControl
+    OperationDefinition operationDefinition
+    Locale locale
     DataFetchingFieldSelectionSet selectionSet
     GraphQLFieldDefinition fieldDefinition
     Object root
+    MergedField mergedField
     Field field
     ExecutionStepInfo executionStepInfo
-    ExecutionContext executionContext
+    Document document
+    Map<String, Object> variables
+    QueryDirectives queryDirectives
 
     @Override
     boolean containsArgument(String name) {
@@ -51,43 +55,58 @@ class MockDataFetchingEnvironment implements DataFetchingEnvironment {
     }
 
     @Override
-    def <T> T getLocalContext() {
-        return null
+    GraphQLContext getGraphQlContext() {
+        GraphQLContext.newContext().build()
+    }
+
+    @Override
+    Object getArgumentOrDefault(String name, Object defaultValue) {
+        arguments.getOrDefault(name, defaultValue)
+    }
+
+    @Override
+    Object getLocalContext() {
+        localContext
     }
 
     @Override
     MergedField getMergedField() {
-        return null
+        MergedField.newMergedField(fields).build()
     }
 
     @Override
     QueryDirectives getQueryDirectives() {
-        return null
+        queryDirectives
     }
 
     @Override
     def <K, V> DataLoader<K,V> getDataLoader(String dataLoaderName) {
-        return null
+        dataLoaderRegistry ? dataLoaderRegistry.getDataLoader(dataLoaderName) : null
     }
 
     @Override
     CacheControl getCacheControl() {
-        return null
+        cacheControl
+    }
+
+    @Override
+    Locale getLocale() {
+        locale
     }
 
     @Override
     OperationDefinition getOperationDefinition() {
-        return null
+         operationDefinition
     }
 
     @Override
     Document getDocument() {
-        return null
+        document
     }
 
     @Override
     Map<String, Object> getVariables() {
-        return null
+        variables
     }
 
     @Override

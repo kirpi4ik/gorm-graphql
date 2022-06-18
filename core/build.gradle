@@ -1,13 +1,16 @@
 apply plugin: 'codenarc'
 
 dependencies {
-    compile "org.grails:grails-datastore-gorm:$gormVersion"
+    documentation "org.codehaus.groovy:groovy-cli-picocli:$groovyVersion"
+
+    compile "org.grails:grails-datastore-gorm:${gormVersion}"
     compile "com.graphql-java:graphql-java:$graphqlJavaVersion"
+    compile "com.graphql-java:graphql-java-extended-scalars:$graphqlJavaScalarExtVersion"
 
     codenarc "org.codenarc:CodeNarc:$codenarcVersion"
 
-    testCompile "org.grails:grails-datastore-gorm-hibernate5:$gormVersion"
-    testCompile "org.grails:grails-datastore-gorm-mongodb:$gormVersion"
+    testCompile "org.grails:grails-datastore-gorm-hibernate5:${gormHibernateVersion}"
+    testCompile "org.grails:grails-datastore-gorm-mongodb:${gormMongoDbVersion}"
     testCompile 'com.github.fakemongo:fongo:2.1.0'
     testRuntime "com.h2database:h2:1.4.192"
     testRuntime "org.apache.tomcat:tomcat-jdbc:8.5.0"
@@ -22,12 +25,12 @@ codenarc {
     toolVersion = codenarcVersion
     configFile = file("${projectDir}/config/codenarc/rules.groovy")
     maxPriority1Violations = 0
-    maxPriority2Violations = 2
-    maxPriority3Violations = 8
+    maxPriority2Violations = 0
+    maxPriority3Violations = 0
 }
 
 codenarcMain {
-    exclude '**/GormScalars.groovy'
+    exclude '**/CustomScalars.groovy'
 }
 
 codenarcTest {
