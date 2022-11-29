@@ -50,7 +50,7 @@ trait Typed<T> {
         Class type = returnType
 
         if (type.enum) {
-            graphQLType = typeManager.getEnumType(type, nullable)
+            graphQLType = typeManager.getEnumType(type as Class<? extends Enum>, nullable)
         }
         else if (typeManager.hasType(type)) {
             graphQLType = typeManager.getType(type, nullable)

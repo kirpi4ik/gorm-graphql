@@ -5,9 +5,11 @@ import grails.gorm.validation.PersistentEntityValidator
 import graphql.schema.DataFetcher
 import graphql.schema.GraphQLType
 import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.PropertyMapping
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.model.types.ToMany
@@ -63,7 +65,7 @@ class PersistentGraphQLProperty extends OrderedGraphQLProperty {
             this.nullable = mapping.nullable
         }
         else {
-            this.nullable = property.mapping.mappedForm.nullable
+            this.nullable = (property.mapping.mappedForm as Property).nullable
         }
         this.output = mapping.output
         this.input = mapping.input
@@ -146,7 +148,7 @@ class PersistentGraphQLProperty extends OrderedGraphQLProperty {
         GraphQLType graphQLType
 
         if (type.enum) {
-            graphQLType = typeManager.getEnumType(type, nullable)
+            graphQLType = typeManager.getEnumType(type as Class<? extends Enum>, nullable)
         }
         else {
             boolean embedded = false

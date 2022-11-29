@@ -2,6 +2,8 @@ package org.grails.gorm.graphql.entity.dsl.helpers
 
 import graphql.schema.*
 import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.gorm.graphql.entity.fields.ComplexField
 import org.grails.gorm.graphql.entity.fields.Field
@@ -18,6 +20,7 @@ import static graphql.schema.GraphQLInputObjectField.newInputObjectField
  * @author James Kleeh
  * @since 1.0.0
  */
+@TypeChecked(TypeCheckingMode.SKIP)
 @CompileStatic
 trait ComplexTyped<T> extends ExecutesClosures {
 

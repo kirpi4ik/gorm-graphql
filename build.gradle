@@ -1,9 +1,10 @@
 buildscript {
     repositories {
+        mavenCentral()
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
         classpath "org.grails:grails-docs:${project.ext.properties.grailsDocsVersion ?: grailsVersion}"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
@@ -11,11 +12,8 @@ buildscript {
     }
 }
 
-//plugins {
-//    id 'com.gradle.build-scan' version '2.0.2'
-//}
-
 repositories {
+    mavenCentral()
     maven { url "https://repo.grails.org/grails/core" }
 }
 
@@ -26,7 +24,7 @@ ext {
 }
 
 subprojects {
-
+    group "org.myhab.tools"
     version project.projectVersion
 
     ext {
@@ -36,12 +34,13 @@ subprojects {
     }
 
     repositories {
+        mavenCentral()
         maven { url "https://repo.grails.org/grails/core" }
     }
 
-    if(project.name.startsWith("examples-")) {
-        if(project.name.startsWith("examples-grails-")) {
-            apply plugin:"org.grails.grails-web"
+    if (project.name.startsWith("examples-")) {
+        if (project.name.startsWith("examples-grails-")) {
+            apply plugin: "org.grails.grails-web"
         }
 
         tasks.withType(Test) {
@@ -53,29 +52,20 @@ subprojects {
         return
     }
 
-    if(isGrailsPlugin) {
-        group "org.grails.plugins"
-    }
-    else {
-        group "org.grails"
-    }
-
-    if(project.name.endsWith('docs')) {
-        apply from:"${commonBuild}/common-docs.gradle"
+    if (project.name.endsWith('docs')) {
+        apply from: "${commonBuild}/common-docs.gradle"
         return
     }
 
     if (isGrailsPlugin) {
-        apply plugin:"org.grails.grails-plugin"
+        apply plugin: "org.grails.grails-plugin"
+    } else {
+        apply from: "$rootProject.projectDir/gradle/project.gradle"
     }
-    else {
-        apply from:"${commonBuild}/common-project.gradle"
-    }
-
-    apply from:"${commonBuild}/common-publishing.gradle"
+    apply from: "$rootProject.projectDir/gradle/publishing.gradle"
 
     dependencies {
-        testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
+        testImplementation "org.codehaus.groovy:groovy-test:$groovyVersion"
     }
 
     tasks.withType(GroovyCompile) {
@@ -92,8 +82,3 @@ subprojects {
         }
     }
 }
-
-//buildScan {
-//    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-//    termsOfServiceAgree = 'yes'
-//}

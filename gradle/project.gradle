@@ -1,0 +1,17 @@
+apply plugin:'groovy'
+apply plugin: 'java-library'
+configurations {
+    documentation
+}
+test {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+}
+dependencies {
+    api "org.codehaus.groovy:groovy:$groovyVersion"
+    api "org.slf4j:slf4j-api:$slf4jVersion"
+    testImplementation "org.spockframework:spock-core:${spockVersion}", {
+        exclude module:'groovy-all'
+    }
+}

@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = "2.1.1.RELEASE"
+		springBootVersion = "2.1.18.RELEASE"
 	}
 	repositories {
 		mavenCentral()
@@ -16,23 +16,26 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 dependencies {
-	compile 'org.springframework.boot:spring-boot-starter'
-	compile "org.springframework.boot:spring-boot-starter-web"
-	compile 'org.codehaus.groovy:groovy'
-	compile "org.grails:gorm-hibernate5-spring-boot:${gormHibernateVersion}"
-	compile "org.hibernate:hibernate-core:$hibernateCoreVersion"
-	compile "org.hibernate:hibernate-ehcache:$hibernateEcacheVersion"
-	compile "org.grails:grails-core:$grailsVersion"
-	compile project(":gorm-graphql")
+	implementation project(":gorm-graphql")
+	implementation "com.graphql-java:graphql-java:$graphqlJavaVersion"
 
-	runtime "com.h2database:h2:1.4.192"
-	runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
-	runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation "org.springframework.boot:spring-boot-starter-web"
+	implementation 'org.codehaus.groovy:groovy'
+	implementation "org.grails:gorm-hibernate5-spring-boot:${gormHibernateVersion}"
+	implementation "org.hibernate:hibernate-core:$hibernateCoreVersion"
+	implementation "org.hibernate:hibernate-ehcache:$hibernateEcacheVersion"
+	implementation "org.grails:grails-core:$grailsVersion"
 
-	runtime "javax.el:javax.el-api:3.0.0"
-	runtime "org.glassfish:javax.el:3.0.0"
+	runtimeOnly "com.h2database:h2:1.4.192"
+	runtimeOnly "org.apache.tomcat:tomcat-jdbc:8.5.0"
+	runtimeOnly "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
 
-	testCompile 'org.springframework.boot:spring-boot-starter-test'
-	testCompile "org.spockframework:spock-spring:$spockVersion"
+	runtimeOnly "javax.el:javax.el-api:3.0.0"
+	runtimeOnly "org.glassfish:javax.el:3.0.0"
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.junit.vintage:junit-vintage-engine'
+	testImplementation "org.spockframework:spock-spring:$spockVersion"
 
 }

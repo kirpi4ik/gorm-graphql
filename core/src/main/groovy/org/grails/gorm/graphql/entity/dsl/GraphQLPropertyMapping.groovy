@@ -1,6 +1,8 @@
 package org.grails.gorm.graphql.entity.dsl
 
 import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import org.grails.gorm.graphql.entity.dsl.helpers.Deprecatable
@@ -37,6 +39,7 @@ import org.grails.gorm.graphql.entity.dsl.helpers.Named
  * @since 1.0.0
  */
 @Builder(builderStrategy = SimpleStrategy, prefix = '')
+@TypeChecked(TypeCheckingMode.SKIP)
 @CompileStatic
 class GraphQLPropertyMapping implements Describable<GraphQLPropertyMapping>, Deprecatable<GraphQLPropertyMapping>, Named<GraphQLPropertyMapping>, ExecutesClosures {
 

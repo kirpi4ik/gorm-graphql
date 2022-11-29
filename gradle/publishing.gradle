@@ -1,0 +1,46 @@
+apply plugin: 'maven-publish'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
+            from project.components.java
+
+            pom {
+                name = project.name
+                description = 'GORM GraphQL'
+                url = 'https://github.com/kirpi4ik/gorm-graphql'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                    scm {
+                        url = 'https://github.com/kirpi4ik/gorm-graphql'
+                        connection = 'scm:https://github.com/kirpi4ik/gorm-graphql.git'
+                        developerConnection = 'scm:git@github.com:kirpi4ik/gorm-graphql.git'
+                    }
+                    developers {
+                        developer {
+                            name = 'kirpi4ik'
+                            organization = 'MyHAB'
+                        }
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = project.findProperty("mavenCentralUsername") ?: System.getenv("MVN_CENTRAL_USERNAME")
+                password = project.findProperty("mavenCentralPassword") ?: System.getenv("MVN_CENTRAL_PASSWD")
+            }
+        }
+    }
+}
