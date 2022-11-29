@@ -2,6 +2,8 @@ package org.grails.gorm.graphql.entity.dsl
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import org.grails.gorm.graphql.entity.dsl.helpers.Deprecatable
 import org.grails.gorm.graphql.entity.dsl.helpers.Describable
 import org.grails.gorm.graphql.entity.dsl.helpers.ExecutesClosures
@@ -36,6 +38,7 @@ import org.springframework.validation.DataBinder
  * @author James Kleeh
  * @since 1.0.0
  */
+@TypeChecked(TypeCheckingMode.SKIP)
 @CompileStatic
 class GraphQLMapping implements Describable<GraphQLMapping>, Deprecatable<GraphQLMapping>, ExecutesClosures {
 

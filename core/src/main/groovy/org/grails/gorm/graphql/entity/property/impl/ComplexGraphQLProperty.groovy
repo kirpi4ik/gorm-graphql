@@ -3,6 +3,8 @@ package org.grails.gorm.graphql.entity.property.impl
 import graphql.schema.GraphQLType
 import groovy.transform.AutoClone
 import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import org.grails.gorm.graphql.entity.dsl.helpers.ComplexTyped
 import org.grails.gorm.graphql.entity.dsl.helpers.ExecutesClosures
 import org.grails.gorm.graphql.types.GraphQLOperationType
@@ -16,6 +18,7 @@ import org.grails.gorm.graphql.types.GraphQLTypeManager
  * @since 1.0.0
  */
 @AutoClone
+@TypeChecked(TypeCheckingMode.SKIP)
 @CompileStatic
 class ComplexGraphQLProperty extends CustomGraphQLProperty<ComplexGraphQLProperty> implements ExecutesClosures {
 

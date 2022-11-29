@@ -2,6 +2,8 @@ package org.grails.gorm.graphql.entity.dsl.helpers
 
 import graphql.schema.GraphQLArgument
 import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.gorm.graphql.entity.arguments.ComplexArgument
 import org.grails.gorm.graphql.entity.arguments.CustomArgument
@@ -15,6 +17,7 @@ import org.grails.gorm.graphql.types.GraphQLTypeManager
  * @author James Kleeh
  * @since 1.0.0
  */
+@TypeChecked(TypeCheckingMode.SKIP)
 @CompileStatic
 trait Arguable<T> extends ExecutesClosures {
 

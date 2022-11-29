@@ -6,6 +6,8 @@ import grails.gorm.transactions.TransactionService
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
 import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import groovy.util.logging.Slf4j
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormEntity
@@ -25,6 +27,7 @@ import org.grails.gorm.graphql.entity.EntityFetchOptions
  * @author James Kleeh
  * @since 1.0.0
  */
+@TypeChecked(TypeCheckingMode.SKIP)
 @CompileStatic
 @Slf4j
 abstract class DefaultGormDataFetcher<T> implements DataFetcher<T> {
