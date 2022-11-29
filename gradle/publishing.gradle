@@ -1,4 +1,5 @@
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -43,4 +44,8 @@ publishing {
             }
         }
     }
+}
+signing {
+    useGpgCmd()
+    sign publishing.publications.mavenJava
 }
